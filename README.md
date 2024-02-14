@@ -1,9 +1,9 @@
-# A Neovim Plugin Template
+# Broot in nvim
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ellisonleao/nvim-plugin-template/lint-test.yml?branch=main&style=for-the-badge)
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
-Integrates broot into nvim
+Integrates (broot)[https://dystroy.org/broot] into nvim
 
 ## Install
 Install using lazy.nvim:
@@ -19,6 +19,8 @@ require("lazy").setup({
     },
 })
 ```
+# Test it
+Quick test `nvim -c "Broot"`
 
 <!--
 ## Features and structure 
