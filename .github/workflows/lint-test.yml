@@ -21,6 +21,8 @@ jobs:
         nvim-versions: ['stable', 'nightly']
     name: test
     steps:
+      - run: sudo snap install --edge --classic just
+
       - name: checkout
         uses: actions/checkout@v3
 
@@ -30,4 +32,4 @@ jobs:
           version: ${{ matrix.nvim-versions }}
 
       - name: run tests
-        run: make test
+        run: just test
