@@ -2,7 +2,7 @@
 local M = {}
 
 ---@return string
-M.my_first_function = function(greeting)
+M.launch_broot = function(greeting)
   return greeting
 end
 
