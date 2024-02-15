@@ -2,11 +2,11 @@
 -- Bad parts probably mine
 
 local broot_window = require("broot.window")
-local broot_config = require("broot.config")
+local broot_utils = require("broot.utils")
 
 local conf_hjson_path = vim.fn.tempname() .. ".hjson"
 
-broot_config.write_select_hjson(conf_hjson_path)
+broot_utils.write_select_hjson(conf_hjson_path)
 
 BROOT_BUFFER = nil
 BROOT_LOADED = false
@@ -15,30 +15,6 @@ local prev_win = -1
 local win = -1
 local buffer = -1
 
---- Trims a string
----@param s string
----@return string
-local function trim(s)
-  return s:match("^%s*(.*)"):match("(.-)%s*$")
-end
-
---- When executing broot in a term the first line is reputed many times
---  and only contains the current folder where broot is executed.
----@param lines string[]
----@return string[]
-local function broot_stdout_clean(lines)
-  out_lines = {}
-  local first_line = trim(lines[1])
-  for index, line in ipairs(lines) do
-    if index > 1 then
-      line = trim(line)
-      if line ~= "" and line ~= first_line then
-        table.insert(out_lines, line)
-      end
-    end
-  end
-  return out_lines
-end
 --- on_exit callback function to delete the open buffer when lazygit exits in a neovim terminal
 ---
 ---@param job_id integer
@@ -48,7 +24,7 @@ local function on_exit(job_id, code, event)
   local current_buf = 0
   local lines = vim.api.nvim_buf_get_lines(current_buf, 0, -1, false)
 
-  lines = broot_stdout_clean(lines)
+  lines = broot_utils.clean_stdout(lines)
 
   if code ~= 0 then
     print("broot failed")
@@ -84,7 +60,7 @@ end
 
 local M = {}
 
-M.broot = function()
+local function broot(cwd)
   if not is_broot_available() then
     print("Please install broot 🐮 https://dystroy.org/broot/install")
     return
@@ -94,13 +70,24 @@ M.broot = function()
 
   win, buffer = broot_window.open_floating()
 
-  local cmd = "broot --conf " .. conf_hjson_path
+  local cmd = "broot --conf " .. conf_hjson_path .. " " .. cwd
   if BROOT_LOADED == false then
     -- ensure that the buffer is closed on exit
     vim.g.broot_opened = 1
     vim.fn.termopen(cmd, { on_exit = on_exit })
   end
   vim.cmd("startinsert") -- insert mode
+end                      --- Starts broot
+---@param cwd string
+
+--- Executes broot on current buffer's folder
+M.br = function()
+  broot(vim.fn.expand("%:p:h"))
+end
+
+--- Executes broot at the git root repository
+M.br_root = function()
+  broot(".")
 end
 
 return M
