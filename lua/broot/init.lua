@@ -2,28 +2,11 @@
 -- Bad parts probably mine
 
 local broot_window = require("broot.window")
+local broot_config = require("broot.config")
 
-local conf_hjson = vim.fn.tempname() .. ".hjson"
+local conf_hjson_path = vim.fn.tempname() .. ".hjson"
 
-local function write_select_hjson()
-  local file = assert(io.open(conf_hjson, "w"))
-  local conf = [[
-  verbs: [
-    {
-        invocation: "ok"
-        key: "enter"
-        leave_broot: true
-        execution: ":print_path"
-        apply_to: "file"
-    }
-  ]
-]]
-  file:write(conf)
-  file:flush()
-  file:close()
-end
-
-write_select_hjson()
+broot_config.write_select_hjson(conf_hjson_path)
 
 BROOT_BUFFER = nil
 BROOT_LOADED = false
@@ -111,7 +94,7 @@ M.broot = function()
 
   win, buffer = broot_window.open_floating()
 
-  local cmd = "broot --conf " .. conf_hjson
+  local cmd = "broot --conf " .. conf_hjson_path
   if BROOT_LOADED == false then
     -- ensure that the buffer is closed on exit
     vim.g.broot_opened = 1
