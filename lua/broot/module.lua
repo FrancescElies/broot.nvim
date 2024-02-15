@@ -3,6 +3,20 @@
 
 local broot_window = require("broot.window")
 -- local project_root_dir = require("lazygit.utils").project_root_dir
+local conf_hjson = vim.fn.tempname() .. ".hjson"
+local file = io.open(conf_hjson, "w")
+file:write([[
+  verbs: [
+    {
+        invocation: "ok"
+        key: "enter"
+        leave_broot: true
+        execution: ":print_path"
+        apply_to: "file"
+    }
+  ]
+]])
+file.close()
 
 BROOT_BUFFER = nil
 BROOT_LOADED = false
@@ -91,7 +105,7 @@ M.launch_broot = function()
 
   win, buffer = broot_window.open_floating()
 
-  local cmd = "broot"
+  local cmd = "broot --conf " .. conf_hjson
   if BROOT_LOADED == false then
     -- ensure that the buffer is closed on exit
     vim.g.broot_opened = 1
