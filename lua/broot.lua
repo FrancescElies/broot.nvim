@@ -21,7 +21,7 @@ M.setup = function(args)
 end
 
 M.broot = function()
-  return module.launch_broot(M.config.opt)
+  return module.broot(M.config.opt)
 end
 
 return M

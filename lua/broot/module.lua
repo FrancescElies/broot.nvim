@@ -2,10 +2,12 @@
 -- Bad parts probably mine
 
 local broot_window = require("broot.window")
--- local project_root_dir = require("lazygit.utils").project_root_dir
+
 local conf_hjson = vim.fn.tempname() .. ".hjson"
-local file = io.open(conf_hjson, "w")
-file:write([[
+
+local function write_select_hjson()
+  local file = assert(io.open(conf_hjson, "w"))
+  local conf = [[
   verbs: [
     {
         invocation: "ok"
@@ -15,8 +17,13 @@ file:write([[
         apply_to: "file"
     }
   ]
-]])
-file.close()
+]]
+  file:write(conf)
+  file:flush()
+  file.close()
+end
+
+write_select_hjson()
 
 BROOT_BUFFER = nil
 BROOT_LOADED = false
@@ -95,7 +102,7 @@ end
 ---@class CustomModule
 local M = {}
 
-M.launch_broot = function()
+M.broot = function()
   if is_broot_available() ~= true then
     print("Please install broot 🐮 https://dystroy.org/broot/install")
     return
