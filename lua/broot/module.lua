@@ -1,4 +1,5 @@
 -- Good things shamelessly copied from https://github.com/kdheepak/lazygit.nvim
+-- Bad parts probably mine
 
 local broot_window = require("broot.window")
 -- local project_root_dir = require("lazygit.utils").project_root_dir
@@ -10,15 +11,43 @@ local prev_win = -1
 local win = -1
 local buffer = -1
 
+--- Trims a string
+---@param s string
+---@return string
+local function trim(s)
+  return s:match("^%s*(.*)"):match("(.-)%s*$")
+end
+
+--- When executing broot in a term the first line is reputed many times
+--  and only contains the current folder where broot is executed.
+---@param lines string[]
+---@return string[]
+local function broot_stdout_clean(lines)
+  out_lines = {}
+  local first_line = trim(lines[1])
+  for index, line in ipairs(lines) do
+    if index > 1 then
+      line = trim(line)
+      if line ~= "" and line ~= first_line then
+        table.insert(out_lines, line)
+      end
+    end
+  end
+  return out_lines
+end
 --- on_exit callback function to delete the open buffer when lazygit exits in a neovim terminal
 ---
 ---@param job_id integer
 ---@param code integer
----@param event integer
+---@param event string
 local function on_exit(job_id, code, event)
+  local current_buf = 0
+  local lines = vim.api.nvim_buf_get_lines(current_buf, 0, -1, false)
+
+  lines = broot_stdout_clean(lines)
+
   if code ~= 0 then
     print("broot failed")
-    vim.cmd("silent! :bdelete")
     vim.cmd("silent! :checktime")
     return
   end
@@ -37,6 +66,11 @@ local function on_exit(job_id, code, event)
     end
     buffer = -1
     win = -1
+  end
+
+  -- open selected files in broot
+  for _, line in ipairs(lines) do
+    vim.api.nvim_command("edit " .. line)
   end
 end
 
