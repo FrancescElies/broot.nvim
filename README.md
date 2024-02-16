@@ -3,24 +3,30 @@
 <!-- ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ellisonleao/nvim-plugin-template/lint-test.yml?branch=main&style=for-the-badge) -->
 <!-- ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua) -->
 
-Integrates (broot)[https://dystroy.org/broot] into nvim
+(Telescope)[https://github.com/nvim-telescope/telescope.nvim] is great but sometimes for certain jobs you already know other tools that fit better the job at hand, one of those is (broot)[https://dystroy.org/broot]. 
+
+In certain situations you don't want to have to open another terminal just to use broot, 
+this plugin aims to integrate broot into nvim to avoid that overhead.
 
 ## Install
 Install using lazy.nvim:
 
 ```lua
 require("lazy").setup({
-    {
-        "FrancescElies/broot.nvim",
-        -- optional for floating window border decoration
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-        },
-    },
+  "FrancescElies/broot.nvim",
+  -- optional for floating window border decoration
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+  },
+  config = function()
+    vim.keymap.set('n', '<C-p>', ':BrRoot<cr>', { desc = 'broot (git root)' })
+    vim.keymap.set('n', '<leader>fb', ':Br<cr>', { desc = 'broot (current dir)' })
+  end,
 })
 ```
+
 # Test it
-Quick test `nvim -c "Broot"`
+Quick test `nvim -c "Br"`
 
 <!--
 ## Features and structure 
