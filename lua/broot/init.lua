@@ -50,7 +50,9 @@ local function on_exit(job_id, code, event)
 
   -- open selected files in broot
   for _, line in ipairs(lines) do
-    vim.api.nvim_command("edit " .. line)
+    if vim.fn.filereadable(line) then
+      vim.api.nvim_command("edit " .. line)
+    end
   end
 end
 
@@ -60,7 +62,10 @@ end
 
 local M = {}
 
-local function broot(cwd)
+--- Calls broot
+---@param cwd string
+---@param args string
+local function broot(cwd, args)
   if not is_broot_available() then
     print("Please install broot 🐮 https://dystroy.org/broot/install")
     return
@@ -70,24 +75,24 @@ local function broot(cwd)
 
   win, buffer = broot_window.open_floating()
 
-  local cmd = "broot --conf " .. conf_hjson_path .. " " .. cwd
+  local cmd = "broot --conf " .. conf_hjson_path .. " " .. args .. " " .. cwd
   if BROOT_LOADED == false then
     -- ensure that the buffer is closed on exit
     vim.g.broot_opened = 1
     vim.fn.termopen(cmd, { on_exit = on_exit })
   end
   vim.cmd("startinsert") -- insert mode
-end                      --- Starts broot
----@param cwd string
+end
 
 --- Executes broot on current buffer's folder
-M.br = function()
-  broot(vim.fn.expand("%:p:h"))
+M.br = function(args)
+  local cwd = vim.fn.expand("%:p:h")
+  broot(cwd, args)
 end
 
 --- Executes broot at the git root repository
-M.br_root = function()
-  broot(".")
+M.br_root = function(args)
+  broot(broot_utils.find_git_root(), args)
 end
 
 return M
