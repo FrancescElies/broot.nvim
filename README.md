@@ -1,6 +1,6 @@
 # Broot in nvim
 
-_Abandoned:_ the following shortcuts in wezterm do a better job than this plugin.
+⚠️ _Abandoned:_ the following shortcuts in wezterm do a better job than this plugin.
 
 ```
   { key = 'f', mods = mods.alt, action = a.SplitVertical { args = { 'broot' } } },
